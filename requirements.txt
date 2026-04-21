@@ -1,0 +1,7 @@
+pandas
+numpy
+python-dotenv
+kaggle
+sentence-transformers
+faiss-cpu
+google-genai

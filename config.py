@@ -10,7 +10,7 @@ DATA_DIR = BASE_DIR / "data"
 FAISS_DIR = BASE_DIR / "faiss_index"
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 

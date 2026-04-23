@@ -1,7 +1,4 @@
-from pathlib import Path
 from typing import List, Dict, Any
-
-import numpy as np
 
 from rag.loader import load_documents
 from rag.chunker import chunk_documents
@@ -20,24 +17,26 @@ def main():
     print(f"Loaded {len(documents)} documents")
 
     print("Chunking documents...")
-    chunks: List[str] = chunk_documents(documents, chunk_size=500, overlap=100)
+    chunks: List[Dict[str, Any]] = chunk_documents(documents, chunk_size=500, overlap=100)
     print(f"Total chunks: {len(chunks)}")
 
-    # Build metadata: at least store text; later you can add doc_id, etc.
     metadata: List[Dict[str, Any]] = []
-    for idx, chunk_text in enumerate(chunks):
-        # doc_id could come from loader; for now we store only chunk index + text
+    chunk_texts: List[str] = []
+    for idx, chunk in enumerate(chunks):
         metadata.append(
             {
                 "chunk_id": idx,
-                "text": chunk_text,
-                # "doc_id": ...  # you can add later
+                "text": chunk["text"],
+                "doc_id": chunk["doc_id"],
+                "chunk_in_doc": chunk["chunk_in_doc"],
+                "metadata": chunk["metadata"],
             }
         )
+        chunk_texts.append(chunk["text"])
 
     print("Embedding chunks...")
     embedder = Embedder()
-    embeddings = embedder.embed_texts(chunks)  # shape (n_chunks, dim)
+    embeddings = embedder.embed_texts(chunk_texts)
     print(f"Embeddings shape: {embeddings.shape}")
 
     print("Building FAISS index...")

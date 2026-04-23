@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 import numpy as np
 
@@ -13,7 +13,7 @@ from rag.faiss_store import (
 # Lazy globals so we don't reload on every call
 _index = None
 _metadata: List[Dict[str, Any]] = []
-_embedder: Embedder | None = None
+_embedder: Optional[Embedder] = None
 
 
 def _ensure_loaded():
@@ -46,6 +46,9 @@ def retrieve(question: str, k: int = 5) -> List[Dict[str, Any]]:
                 "chunk_id": meta.get("chunk_id", idx),
                 "text": meta["text"],
                 "distance": float(dist),
+                "doc_id": meta.get("doc_id"),
+                "chunk_in_doc": meta.get("chunk_in_doc"),
+                "metadata": meta.get("metadata", {}),
             }
         )
     return results

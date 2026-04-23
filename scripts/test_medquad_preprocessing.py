@@ -1,6 +1,7 @@
 from rag.loader import load_documents
 from rag.chunker import chunk_documents
 
+
 def main():
     docs = load_documents()
     print("Loaded docs:", len(docs))
@@ -11,8 +12,8 @@ def main():
     chunks = chunk_documents(docs, chunk_size=500, overlap=100)
     print("Total chunks:", len(chunks))
 
-    print("\nExample document:\n", docs[0])
-    print("\nExample chunk:\n", chunks[0])
+    print("\nExample document:\n", docs[0].text)
+    print("\nExample chunk:\n", chunks[0]["text"])
 
 if __name__ == "__main__":
     main()

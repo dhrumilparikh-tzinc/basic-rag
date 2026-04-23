@@ -1,133 +1,186 @@
-# Basic RAG (Retrieval Augmented Generation) Assignment
+# Basic Medical RAG
 
-A Retrieval Augmented Generation system built with Python that loads medical Q&A data, chunks documents, and prepares them for semantic search and retrieval tasks.
+A Retrieval Augmented Generation assignment project using the MedQuAD dataset, SentenceTransformers embeddings, FAISS retrieval, Google Gemini generation, and PostgreSQL logging.
+
+## What This Project Includes
+
+- CSV loading and preprocessing for MedQuAD
+- Character-based chunking with metadata preservation
+- Embedding generation with `sentence-transformers/all-MiniLM-L6-v2`
+- FAISS index build, save, and reload support
+- Retrieval of top-k relevant chunks
+- Gemini answer generation grounded in retrieved context
+- PostgreSQL logging for each Q&A interaction
 
 ## Project Structure
 
-```
+```text
 basic_rag_assignment/
-├── app.py                      # Main application entry point
-├── config.py                   # Configuration settings
-├── requirements.txt            # Python dependencies
-├── readme.md                   # This file
-│
-├── data/
-│   └── medquad.csv            # Medical Q&A dataset (MedQuAD)
-│
-├── db/
-│   ├── db.py                  # Database operations
-│   └── models.py              # Database models
-│
-├── faiss_index/               # FAISS vector index storage
-│
-├── rag/
-│   ├── __init__.py           # RAG package initialization
-│   ├── loader.py             # Document loader for CSV data
-│   ├── chunker.py            # Document chunking utilities
-│   └── models.py             # RAG models and utilities
-│
-└── scripts/
-    ├── download_kaggle_data.py      # Download MedQuAD dataset from Kaggle
-    ├── inspect_medquad.py           # Inspect and analyze dataset columns
-    └── test_medquad_preprocessing.py # Test data preprocessing pipeline
+|-- app.py
+|-- config.py
+|-- requirements.txt
+|-- readme.md
+|-- .env
+|-- .env.example
+|-- data/
+|   |-- medquad.csv
+|-- db/
+|   |-- __init__.py
+|   |-- db.py
+|   |-- logger.py
+|   |-- models.py
+|-- faiss_index/
+|   |-- index.faiss
+|   |-- index.pkl
+|-- rag/
+|   |-- __init__.py
+|   |-- chunker.py
+|   |-- embedder.py
+|   |-- faiss_store.py
+|   |-- generator.py
+|   |-- loader.py
+|   |-- models.py
+|   |-- retriever.py
+|-- scripts/
+|   |-- __init__.py
+|   |-- build_index.py
+|   |-- download_kaggle_data.py
+|   |-- init_db.py
+|   |-- inspect_medquad.py
+|   |-- test_medquad_preprocessing.py
 ```
 
-## Features Implemented
+## Setup
 
-### 1. **Document Loading** (`rag/loader.py`)
-- Loads medical Q&A data from CSV files
-- Configurable column mapping (Question, Answer, Category)
-- Handles missing values and data validation
-- Returns processed documents as structured text
+### 1. Create and activate the virtual environment
 
-### 2. **Document Chunking** (`rag/chunker.py`)
-- Splits long documents into overlapping chunks
-- Configurable chunk size and overlap parameters
-- Preserves context across chunks
-- Supports batch processing of multiple documents
-
-### 3. **Data Pipeline** (`scripts/`)
-- **inspect_medquad.py**: Inspect dataset structure and columns
-- **download_kaggle_data.py**: Download MedQuAD dataset from Kaggle
-- **test_medquad_preprocessing.py**: Test preprocessing pipeline
-
-### 4. **Database Layer** (`db/`)
-- Database operations and management
-- Models for storing documents and metadata
-- Support for vector storage with FAISS
-
-## Requirements
-
-- Python 3.8+
-- pandas
-- numpy
-- python-dotenv
-- kaggle
-
-Install dependencies:
-```bash
+```powershell
+cd C:\Users\Dhrumil.parikh\basic_rag_assignment
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-## Usage
+### 2. Create `.env`
 
-### 1. Download Data
-```bash
-python scripts/download_kaggle_data.py
+Copy `.env.example` to `.env` and replace the placeholder values with your real credentials.
+
+Expected variables:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.0-flash
+KAGGLE_USERNAME=your_kaggle_username
+KAGGLE_KEY=your_kaggle_api_key
+DATABASE_URL=postgresql+psycopg2://postgres:your_password@localhost:5432/basic_rag
 ```
 
-### 2. Inspect Dataset
-```bash
-python scripts/inspect_medquad.py
+### 3. Start PostgreSQL and create the database
+
+Make sure the PostgreSQL service is running, then create the database:
+
+```powershell
+"C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE DATABASE basic_rag;"
 ```
 
-### 3. Load and Process Documents
-```python
-from rag.loader import load_documents
-from rag.chunker import chunk_documents
+If the database already exists, PostgreSQL will report that and you can continue.
 
-# Load documents from CSV
-documents = load_documents()
-print(f"Loaded {len(documents)} documents")
+### 4. Initialize the database tables
 
-# Chunk documents for processing
-chunks = chunk_documents(documents, chunk_size=500, overlap=100)
-print(f"Created {len(chunks)} chunks")
+```powershell
+.venv\Scripts\python.exe -m scripts.init_db
 ```
 
-## Configuration
+### 5. Build or rebuild the FAISS index
 
-Update `config.py` with your settings:
-- Dataset paths
-- Column mappings
-- Chunking parameters
-- Database connections
-- Model configurations
+```powershell
+.venv\Scripts\python.exe -m scripts.build_index
+```
 
-## Project Status
+### 6. Run the app
 
-✅ **Completed:**
-- Project structure and organization
-- Document loader implementation
-- Document chunking system
-- Data inspection scripts
-- Requirements and dependencies
+```powershell
+.venv\Scripts\python.exe app.py
+```
 
-🔄 **In Progress / To Do:**
-- Database models and operations
-- FAISS index integration
-- Embedding generation
-- Retrieval functionality
-- API/Application layer
+## Demo Flow
 
-## Next Steps
+For the final assignment demo, show this order:
 
-1. Implement embedding models (e.g., using sentence-transformers)
-2. Create FAISS index for vector search
-3. Build retrieval system
-4. Implement API endpoints in `app.py`
-5. Add evaluation metrics
+1. `.env` exists and contains real values
+2. PostgreSQL service is running
+3. `python -m scripts.init_db`
+4. `python -m scripts.build_index`
+5. `python app.py`
+6. Ask one medical question
+7. Show retrieved chunks in the console
+8. Show the final answer
+9. Verify the inserted row in `qa_logs`
+
+Example query:
+
+```text
+What are the symptoms of glaucoma?
+```
+
+## Verification Status In This Repo
+
+These items are verified from the current codebase:
+
+- Folder structure is present: `db/`, `rag/`, `scripts/`, `data/`
+- `__init__.py` files exist where needed
+- `.venv` exists in the project root
+- `config.py` imports safely without crashing on unrelated missing variables
+- Data loading, null filtering, document building, and chunking are implemented
+- `scripts.test_medquad_preprocessing` runs successfully and produced:
+  - `16,407` loaded documents
+  - `61,886` chunks
+- FAISS artifacts exist on disk:
+  - `faiss_index/index.faiss`
+  - `faiss_index/index.pkl`
+- Retrieval, generation, and logging code paths are implemented
+
+These items still require your real local credentials or services to verify:
+
+- `.env` values are correct
+- PostgreSQL login works
+- `basic_rag` database exists
+- `python -m scripts.init_db` completes successfully
+- A real Gemini response is generated
+- A demo question inserts a visible row into `qa_logs`
+
+## Troubleshooting
+
+### Missing `.env`
+
+If you see a runtime error about `DATABASE_URL` or `GEMINI_API_KEY`, create `.env` from `.env.example` and replace placeholders with real values.
+
+### PostgreSQL authentication failed
+
+Check the password inside `DATABASE_URL`. Example format:
+
+```env
+DATABASE_URL=postgresql+psycopg2://postgres:your_password@localhost:5432/basic_rag
+```
+
+### `psql` is not recognized
+
+Use the full executable path instead:
+
+```powershell
+"C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -lqt
+```
+
+### SentenceTransformer model download issues
+
+The embedding model may need network access the first time it is downloaded. After that, it should load from the local cache.
+
+## Notes
+
+- No secrets should be committed to git.
+- Run scripts from the project root.
+- The logger stores question, context, answer, timestamp, similarity scores, and retrieved chunk IDs.
 
 ## License
 
-This project is part of a RAG assignment.
+Educational assignment project.

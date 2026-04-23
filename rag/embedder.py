@@ -7,7 +7,14 @@ DEFAULT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 class Embedder:
     def __init__(self, model_name: str = DEFAULT_MODEL_NAME):
-        self.model = SentenceTransformer(model_name)
+        try:
+            self.model = SentenceTransformer(model_name)
+        except Exception as exc:
+            raise RuntimeError(
+                "Failed to load the embedding model. "
+                "If this is the first run, make sure the machine has internet access so "
+                f"'{model_name}' can be downloaded, or ensure the model is already cached locally."
+            ) from exc
 
     def embed_texts(self, texts: List[str]) -> np.ndarray:
         """

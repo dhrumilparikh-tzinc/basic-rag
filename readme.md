@@ -316,6 +316,16 @@ The embedding model may need network access the first time it is downloaded. Aft
 - Run scripts from the project root.
 - The logger stores question, context, answer, timestamp, similarity scores, and retrieved chunk IDs.
 
+##Output
+
+<img width="1548" height="913" alt="image" src="https://github.com/user-attachments/assets/8a91d3cd-725e-4e04-8c92-b2afccdc56b9" />
+
+<img width="1560" height="965" alt="image" src="https://github.com/user-attachments/assets/96e97317-8135-4034-bfd8-95b5907d0dd0" />
+
+<img width="1577" height="971" alt="image" src="https://github.com/user-attachments/assets/a270407c-c5c9-48b6-baee-0568ddbbee97" />
+
+
+
 ## License
 
 Educational assignment project.
